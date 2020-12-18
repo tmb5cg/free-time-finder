@@ -23,16 +23,35 @@ function getCalendarIDs() {
 
               console.log("YEEEET", response.result.items[0].id)
 
-              for (var i=0; i<response.result.items.length; i++) {
-                  console.log("Yeet", response.result.items[i].id)
+              // for (var i=0; i<response.result.items.length; i++) {
+              //     console.log("Yeet", response.result.items[i].id)
+              //
+              //     // checkboxid = "checkbox"
+              //     // id_from_input = checkboxid.concat(i)
+              //     // var newlabel = document.createElement("Label");
+              //     // newlabel.setAttribute("for",id_from_input);
+              //     // newlabel.innerHTML = "Here goes the text";
+              //     // parentDiv.appendChild(newlabel);
 
-                  checkboxid = "checkbox"
-                  id_from_input = checkboxid.concat(i)
-                  var newlabel = document.createElement("Label");
-                  newlabel.setAttribute("for",id_from_input);
-                  newlabel.innerHTML = "Here goes the text";
-                  parentDiv.appendChild(newlabel);
 
+                  var calendars = response.result.items;
+                  appendPre('Upcoming events:');
+
+                  if (calendars.length > 0) {
+                    for (i = 0; i < calendars.length; i++) {
+                      var cal = calendars[i];
+                      var calName = cal.id;
+
+                      console.log("Calendar: ", calName)
+                    //   var when = cal.start.dateTime;
+                    //   if (!when) {
+                    //     when = cal.start.date;
+                    //   }
+                    //   appendPre(cal.summary + ' (' + when + ')')
+                    // }
+                  } else {
+                    appendPre('No upcoming events found.');
+                  }
 
                   // checkboxid = "checkbox"
                   // finalstring = checkboxid.concat(i)

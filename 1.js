@@ -21,9 +21,25 @@ function getCalendarIDs() {
               // Handle the results here (response.result has the parsed body).
               console.log("Response", response);
 
-              x = response.items;
-              test = x[0].id;
-              console.log("YEEEET", test)
+              console.log("YEEEET", response.result.items[0].id)
+
+              for (var i=0; i<response.result.items.length; i++) {
+                  console.log("Yeet", response.result.items[i].id)
+
+                  checkboxid = "checkbox"
+                  id_from_input = checkboxid.concat(i)
+                  var newlabel = document.createElement("Label");
+                  newlabel.setAttribute("for",id_from_input);
+                  newlabel.innerHTML = "Here goes the text";
+                  parentDiv.appendChild(newlabel);
+
+
+                  // checkboxid = "checkbox"
+                  // finalstring = checkboxid.concat(i)
+                  // document.getElementById(finalstring).innerHTML = test;
+
+                }
+
               // obj = JSON.parse(response)
               // console.log("Response2", obj)
               //

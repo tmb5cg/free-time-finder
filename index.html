@@ -22,41 +22,48 @@ limitations under the License.
 
     <!-- Include functions in our helper file -->
     <script type="text/javascript" src="1.js"></script>
+    <script src="js/jquery-1.6.2.min.js" type="text/javascript"></script>
+    <script src="js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
+
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" style="display: none;">Authorize</button>
     <button id="signout_button" style="display: none;">Sign Out</button>
-    <button onclick="myFunction()">Try it</button>
-    <button onclick="getCalendarIDs()">get calendar IDs</button>
+    <button onclick="getCalendarIDs()">1 get calendar IDs</button>
+    <button onclick="fn1()">2 Load Array with Checkboxes</button>
 
-    <!-- <input type="checkbox" id="checkbox1">
-    <label for="checkbox1"> 1 </label><br>
+    <button onclick="myFunction()">3 runfunction</button>
+    <button onclick="fn2()">4 compare dates and return times</button>
 
-    <input type="checkbox" id="checkbox2">
-    <label for="checkbox2"> 2 </label><br>
+    <div id="checkboxes"> Stuff here </div>
 
-    <input type="checkbox" id="checkbox3">
-    <label for="checkbox3"> 3 </label><br>
-
-    <input type="checkbox" id="checkbox4">
-    <label for="checkbox4"> 4 </label><br>
-
-    <input type="checkbox" id="checkbox5">
-    <label for="checkbox5"> 5 </label><br>
-
-    <input type="checkbox" id="checkbox6">
-    <label for="checkbox6"> 6 </label><br>
-
-    <input type="checkbox" id="checkbox7">
-    <label for="checkbox7"> 7 </label><br>
-
-    <input type="checkbox" id="checkbox8">
-    <label for="checkbox8"> 8 </label><br>
-
-    <input type="checkbox" id="checkbox9">
-    <label for="checkbox9"> 9 </label><br> -->
-
+    <div id="freetimes"> Calendar free times here </div>
     <pre id="content" style="white-space: pre-wrap;"></pre>
+
+    <!-- <script>
+  	$(document).ready(function() {
+          // Set initial state to 'checked'
+          $( "#checkBox1" ).change(function() {
+
+              $.ajax({
+                  url: 'searchIP.php',
+                  data: {searchIP: $( "#searchIPinput" ).val(),
+                     pizza: $( "#checkBox1" ).prop('checked'),
+                     pizza2: $( "#checkBox2" ).prop('checked'),
+                     pizza3: $( "#checkBox3" ).prop('checked'),
+                     pizza4: $( "#checkBox4" ).prop('checked'),
+                     pizza5: $( "#checkBox5" ).prop('checked'),
+                     pizza6: $( "#checkBox6" ).prop('checked'),
+                     pizza7: $( "#checkBox7" ).prop('checked'),
+                     },
+                  success: function(data){
+                      $('#searchIPresult').html(data);
+                  }
+              });
+          });
+
+  	});
+  	</script> -->
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console

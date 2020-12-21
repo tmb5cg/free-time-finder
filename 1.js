@@ -74,6 +74,14 @@ function fetchFreeBusy() {
 
   // Gets input date from datebox
   inputDate = document.getElementById('startDateinput').value;
+
+  if (inputDate.length < 2) {
+    inputDate = new Date();
+
+    inputDate.setHours(8);
+    inputDate.setMinutes(0);
+    inputDate.setSeconds(0);
+  }
   inputDate = new Date(inputDate);
 
   inputDate2 = document.getElementById('endDateinput').value;

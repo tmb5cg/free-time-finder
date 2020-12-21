@@ -18,7 +18,9 @@ limitations under the License.
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>Google Calendar API Quickstart</p>
+    <p>When are the following calendars free on December 7th?</p>
+    <p>checkbox the ones you want. if any calendar has an all day event, it won't work, go home</p>
+    <p>checkbox the ones you want and click the button, in that order, otherwise leave</p>
 
     <!-- Include functions in our helper file -->
     <script type="text/javascript" src="1.js"></script>
@@ -29,11 +31,11 @@ limitations under the License.
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" style="display: none;">Authorize</button>
     <button id="signout_button" style="display: none;">Sign Out</button>
-    <button onclick="getCalendarIDs()">1 get calendar IDs</button>
-    <button onclick="fn1()">2 Load Array with Checkboxes</button>
+    <button onclick="loadTimes()">GET FREE TIMES</button>
+    <!-- <button onclick="fn1()">2 Load Array with Checkboxes</button>
 
     <button onclick="myFunction()">3 runfunction</button>
-    <button onclick="fn2()">4 compare dates and return times</button>
+    <button onclick="fn2()">4 compare dates and return times</button> -->
 
     <div id="checkboxes"> Stuff here </div>
 
@@ -118,7 +120,8 @@ limitations under the License.
         if (isSignedIn) {
           authorizeButton.style.display = 'none';
           signoutButton.style.display = 'block';
-          listUpcomingEvents();
+          //listUpcomingEvents();
+          runIT();
         } else {
           authorizeButton.style.display = 'block';
           signoutButton.style.display = 'none';
@@ -156,6 +159,20 @@ limitations under the License.
        * the authorized user's calendar. If no events are found an
        * appropriate message is printed.
        */
+
+       function runIT() {
+         getCalendarIDs();
+          // fn1();
+          // myFunction();
+          // fn2();
+       }
+
+       function loadTimes() {
+         fn1();
+         myFunction();
+         fn2();
+       }
+
       function listUpcomingEvents() {
         gapi.client.calendar.events.list({
           'calendarId': 'primary',

@@ -526,7 +526,7 @@ function getCalendarIDs() {
 
 
               var calendars = response.result.items;
-              appendPre('Upcoming events:');
+              //appendPre('Upcoming events:');
 
               if (calendars.length > 0) {
                 for (i = 0; i < calendars.length; i++) {

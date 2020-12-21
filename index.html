@@ -166,7 +166,7 @@ limitations under the License.
           'orderBy': 'startTime'
         }).then(function(response) {
           var events = response.result.items;
-          appendPre('Upcoming events:');
+          //appendPre('Upcoming events:');
 
           if (events.length > 0) {
             for (i = 0; i < events.length; i++) {
@@ -175,10 +175,10 @@ limitations under the License.
               if (!when) {
                 when = event.start.date;
               }
-              appendPre(event.summary + ' (' + when + ')')
+          //    appendPre(event.summary + ' (' + when + ')')
             }
           } else {
-            appendPre('No upcoming events found.');
+            //appendPre('No upcoming events found.');
           }
         });
       }

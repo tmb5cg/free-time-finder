@@ -5,6 +5,7 @@ var inputCals = [];
 var allStartTimes = [];
 var allEndTimes = [];
 
+var masterDate;
 var unitmapping = {"days":24*60*60*1000,
                    "hours":60*60*1000,
                    "minutes":60*1000,
@@ -169,13 +170,7 @@ var masterArray = [];
 
       start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
       end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
-
-  //    appendPre("Start: " + start2);
-  //    appendPre("End: " + end2);
     }
-
-
-  //  appendPre("Will now go into newertimes and remove the above times");
 
     var finaltimes = [];
     for (k=0; k < newertimes.length; k++){
@@ -186,7 +181,6 @@ var masterArray = [];
       var shouldWeAddIt = true;
 
       for (x=0; x < removedtimes.length; x++){
-      //  appendPre("yoyo")
             data2 = removedtimes[x];
             start2 = data2[0];
             end2 = data2[1];
@@ -194,7 +188,6 @@ var masterArray = [];
             if (start2 == start) {
               if (end2 == end) {
                 shouldWeAddIt = false;
-        //        appendPre("found a match hehe");
               }
             }
       }
@@ -204,7 +197,6 @@ var masterArray = [];
       }
    }
 
-  // appendPre("Finaltimes list, just need to add what ever is in newesttimes: ");
    for (k=0; k<finaltimes.length; k++){
      data = finaltimes[k];
      start = data[0];
@@ -213,17 +205,13 @@ var masterArray = [];
      start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
      end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
 
-  //   appendPre("Start: " + start2);
-    // appendPre("End: " + end2);
    }
 
-//   appendPre("Adding element to final times");
    for (k=0; k<newesttimes.length; k++){
      data = newesttimes[k];
      finaltimes.push(data);
    }
 
-  // appendPre("Added it, now printing with new addition");
    for (k=0; k<finaltimes.length; k++){
      data = finaltimes[k];
      start = data[0];
@@ -232,11 +220,7 @@ var masterArray = [];
      start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
      end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
 
-//     appendPre("Start: " + start2);
-//     appendPre("End: " + end2);
    }
-
-//   appendPre("Just need to sort it now, since the new consolidated time is probably out of order");
 
    var allstarttimes3 = [];
    var allendtimes3 = [];
@@ -247,32 +231,11 @@ var masterArray = [];
 
      allstarttimes3.push(start);
      allendtimes3.push(end);
-
-     // start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
-     // end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
-     //
-     // appendPre("Start: " + start2);
-     // appendPre("End: " + end2);
    }
-
-//   appendPre("sorting each individual list now");
-  //  allstarttimes3.sort(function(a, b) {
-  //    var c = new Date(a);
-  //    var d = new Date(b);
-  //    return c-d;
-  //  });
-  //
-  //  allendtimes3.sort(function(a, b) {
-  //    var c = new Date(a);
-  //    var d = new Date(b);
-  //    return c-d;
-  // });
 
   allstarttimes3.sort(function(a, b){return a-b});
   allendtimes3.sort(function(a, b){return a-b});
 
-
-//  appendPre("adding them back together");
   var finalmasterArray = [];
 
     for (x = 0; x < allstarttimes3.length; x++){
@@ -284,20 +247,14 @@ var masterArray = [];
 
       prettyStartTime = timeStartDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
       prettyEndTime = timeEndDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
-  //    appendPre("START TIME " + x + ": " + prettyStartTime);
-//      appendPre("END TIME   " + x + ": " + prettyEndTime);
-
-      // if (timeStartDateFormat > timeEndDateFormat) {
-      //   appendPre("the end time is greater than the start");
-      // }
 
       timecombo = [timeStartDateFormat, timeEndDateFormat];
       finalmasterArray.push(timecombo);
     }
 
-
 //    appendPre("FINISHED!!! allstarttimes3 and allendtimes3, also access altogether with finalmasterArray");
 
+    var awesomeArray = [];
     for (x = 0; x < finalmasterArray.length-1; x++){
       var times = finalmasterArray[x];
       var curstart = times[0];
@@ -325,10 +282,30 @@ var masterArray = [];
 
         appendPre("FREE START: " + prettyStartTime);
         appendPre("FREE END: " + prettyEndTime);
+
+        splitStart = prettyStartTime.split(" ");
+        splitEnd = prettyEndTime.split(" ");
+
+        ogStart = splitStart[1];
+        ogEnd = splitEnd[1];
+        awesomeArray.push([ogStart, ogEnd]);
       }
 
       // timeStartDateFormat = new Date(startTime);
       // timeEndDateFormat = new Date(endTime);
+    }
+
+    appendPre("AWESOME ARRAY you can paste into email:")
+    appendPre("      ")
+    appendPre("[userIDs] are available at the following time(s) on [inputDate]: ")
+
+    for (x = 0; x < awesomeArray.length; x++){
+      var times = awesomeArray[x];
+      var curstart = times[0];
+      var curend = times[1];
+
+      appendPre("[inputDate]: " + curstart + " to " + curend);
+
     }
 
 
@@ -375,22 +352,7 @@ function diff_minutes(dt2, dt1)
 // console.log(getHumanizedDiff(new Date("2018-09-16T00:18:00.000Z") - new Date("2018-09-04T00:20:02.630Z")));
 // console.log(getHumanizedDiff(new Date("2018-09-17T00:16:04.000Z") - new Date("2018-09-14T00:20:12.240Z")));
 function fn2 () {
-  //console.log(getHumanizedDiff(new Date(start2) - new Date(end)));
-
-          // // print it
-          //   for (q = 0; q < allBusyTimes.length; q++){
-          //     time = allBusyTimes[q].date;
-          //     appendPre(time);
-          //   }
-          //
-          //   // print it
-          //   appendPre("printing start times list");
-          //     for (q = 0; q < allStartTimes.length; q++){
-          //       time = allStartTimes[q].date;
-          //       appendPre(time);
-          //     }
-
-            appendPre("- - - - - - - Sort all times:")
+      //      appendPre("- - - - - - - Sort all times:")
 
             allBusyTimes.sort(function(a, b) {
               var c = new Date(a.date);
@@ -398,7 +360,7 @@ function fn2 () {
               return c-d;
           });
 
-          appendPre("- - - - - - - Sorting start times")
+      //    appendPre("- - - - - - - Sorting start times")
 
           allStartTimes.sort(function(a, b) {
             var c = new Date(a.date);
@@ -406,7 +368,7 @@ function fn2 () {
             return c-d;
         });
 
-        appendPre("- - - - - - - Sorting end times")
+    //    appendPre("- - - - - - - Sorting end times")
 
         allEndTimes.sort(function(a, b) {
           var c = new Date(a.date);
@@ -414,7 +376,7 @@ function fn2 () {
           return c-d;
       });
 
-            appendPre("- - - - - - - sort finished, now removing dupes ALL TIMES:")
+          //  appendPre("- - - - - - - sort finished, now removing dupes ALL TIMES:")
 
             allBusyTimes2 = allBusyTimes.filter(function(item, pos) {
                 return allBusyTimes.indexOf(item) == pos;
@@ -424,7 +386,7 @@ function fn2 () {
                 return self.indexOf(item) == pos;
             })
 
-            appendPre("- - - - - - - sort finished, now removing dupes Start Times:")
+    //        appendPre("- - - - - - - sort finished, now removing dupes Start Times:")
 
             allStartTimes2 = allStartTimes.filter(function(item, pos) {
                 return allStartTimes.indexOf(item) == pos;
@@ -434,7 +396,7 @@ function fn2 () {
                 return self.indexOf(item) == pos;
             })
 
-              appendPre("- - - - - - - sort finished, now removing dupes End Times:")
+            //  appendPre("- - - - - - - sort finished, now removing dupes End Times:")
 
               allEndTimes2 = allEndTimes.filter(function(item, pos) {
                   return allEndTimes.indexOf(item) == pos;
@@ -446,15 +408,15 @@ function fn2 () {
 
           //
           //
-          appendPre("- - - - - - - - Printing ALL times sorted array!! !!! ");
+          //appendPre("- - - - - - - - Printing ALL times sorted array!! !!! ");
           for (yolo = 0; yolo < allBusyTimes2.length; yolo++){
             time = allBusyTimes2[yolo].date;
             timeDateFormat = new Date(time);
             prettyTime = timeDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
-            appendPre("SORTED All Times " + yolo + ": " + prettyTime);
+          //  appendPre("SORTED All Times " + yolo + ": " + prettyTime);
           }
 
-          appendPre("- - - - - - - - Passing sorted starttimes and endttimes to new function");
+          //appendPre("- - - - - - - - Passing sorted starttimes and endttimes to new function");
           consolidateAllBusyTimes(allStartTimes2, allEndTimes2);
 }
 

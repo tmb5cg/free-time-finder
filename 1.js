@@ -83,7 +83,7 @@ function fetchFreeBusy() {
     inputDate2 = new Date(inputDate2);
     inputDate2.setHours(inputDate2.getHours()+20);
 
-    document.getElementById('freetimesTitle2').innerHTML = inputDate2;
+    //document.getElementById('freetimesTitle2').innerHTML = inputDate2;
   } else {
     // This means we only want a singular date, so make inputDate2 the same as inputDate and add hours
     inputDate2 = new Date(inputDate);

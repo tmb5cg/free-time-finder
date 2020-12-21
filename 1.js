@@ -1,11 +1,8 @@
-// var allBusyTimes = [];
-var inputEmails;
 var inputCals = [];
 
 var allStartTimes = [];
 var allEndTimes = [];
 
-var masterDate;
 
 // Fetches calendar IDs, creates checkboxes and adds event listener
 // called on site load
@@ -71,13 +68,46 @@ function getCalendarIDs() {
 // makes request to Google Calendar API, populates free busy global arrays
 // called on button click. make it call on checkbxo state change
 function fetchFreeBusy() {
+
+  // Sets up inputCals local storage for input below
   pushCheckboxStatesToLocalStorage();
+
+  // Gets input date from datebox
+  inputDate = document.getElementById('startDateinput').value;
+  inputDate = new Date(inputDate);
+
+  inputDate2 = document.getElementById('endDateinput').value;
+
+  if (inputDate2.length > 2) {
+    // This means we have an end date
+    inputDate2 = new Date(inputDate2);
+    inputDate2.setHours(inputDate2.getHours()+20);
+
+    document.getElementById('freetimesTitle2').innerHTML = inputDate2;
+  } else {
+    // This means we only want a singular date, so make inputDate2 the same as inputDate and add hours
+    inputDate2 = new Date(inputDate);
+    inputDate2.setHours(inputDate.getHours()+24);
+
+  }
+
+  document.getElementById('freetimesTitle').innerHTML = inputDate.toISOString();
+  document.getElementById('freetimesTitle2').innerHTML = inputDate2.toISOString();
+
+  // Format in ISO
+  inputDate = inputDate.toISOString();
+  inputDate2 = inputDate2.toISOString();
+
   return freeRequest = gapi.client.calendar.freebusy.query({
 
         items: inputCals,
         // 8 am EST to 6 pm EST
-        timeMin: "2020-12-07T05:00:00-00:00",
-        timeMax: "2020-12-07T23:00:00-00:00",
+        // timeMin: "2020-12-07T05:00:00-00:00",
+        // timeMax: "2020-12-07T23:00:00-00:00",
+        // timeMin: "2020-12-21T05:00:00.000Z",
+        // timeMax: "2020-12-21T23:00:00.000Z",
+        timeMin: inputDate,
+        timeMax: inputDate2,
         timeZone: "-0500",
     })
 
@@ -105,8 +135,6 @@ function fetchFreeBusy() {
 
               var data = {date: startTime};
               var data2 = {date: endTime};
-              // allBusyTimes.push(data);
-              // allBusyTimes.push(data2);
 
               allStartTimes.push(data);
               allEndTimes.push(data2);
@@ -120,8 +148,6 @@ function fetchFreeBusy() {
 
         },
         function(err) { console.error("Execute error", err); });
-
-        // Run consolidation function which then pretty prints time slots
 }
 
 
@@ -178,7 +204,19 @@ function consolidateAllBusyTimes() {
         timecombo = [timeStartDateFormat, timeEndDateFormat];
         masterArray.push(timecombo);
       }
-
+      // print OG array
+    // //
+    // appendPre("Original array");
+    //   for (k=0; k<masterArray.length;k++){
+    //     data = masterArray[k];
+    //     start = data[0];
+    //     end = data[1];
+    //
+    //     start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+    //     end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+    //
+    //     appendPre(k + " Start: " + start2 + " || End: " + end2);
+    //   }
       // STEP 1 merge all same start times
       var newtimes = [];
       for (x = 0; x < masterArray.length; x++){
@@ -222,6 +260,19 @@ function consolidateAllBusyTimes() {
             }
         }
 
+        // print OG array
+      //
+      // appendPre("Merging same start times");
+      //   for (k=0; k<newtimes.length;k++){
+      //     data = newtimes[k];
+      //     start = data[0];
+      //     end = data[1];
+      //
+      //     start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+      //     end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+      //
+      //     appendPre(k + " Start: " + start2 + " || End: " + end2);
+      //   }
 
       // STEP 2  Remove times within larger time blocks
       var newertimes = [];
@@ -403,50 +454,167 @@ function consolidateAllBusyTimes() {
 function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
     var awesomeArray = [];
     for (x = 0; x < finalmasterArray.length-1; x++){
-      var times = finalmasterArray[x];
-      var curstart = times[0];
-      var curend = times[1];
+          var times = finalmasterArray[x];
+          var curstart = times[0];
+          var curend = times[1];
 
-      var times = finalmasterArray[x+1];
+          var times = finalmasterArray[x+1];
 
-      var nextstart = times[0];
-      var nextend = times[1];
-
-      diff = nextstart - curend;
-
-      if (diff > 0) {
-      //  appendPre("looks like theres a free slot here");
-
-        beginfreeslot = curend;
-        endfreeslot = nextstart + diff;
-
-        prettyStart = new Date(beginfreeslot);
-        prettyEnd = new Date(endfreeslot);
-
-        prettyStartTime = prettyStart.toLocaleString('en-US', { timeZone: 'EST' });
-        prettyEndTime = prettyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+          var nextstart = times[0];
+          var nextend = times[1];
 
 
-        // appendPre("FREE START: " + prettyStartTime);
-        // appendPre("FREE END: " + prettyEndTime);
+          if (x==0) {
+            // First element, subtract from 8am
+            eightAm = new Date(curstart);
 
-        splitStart = prettyStartTime.split(" ");
-        splitEnd = prettyEndTime.split(" ");
+            eightAm.setHours(8);
+            eightAm.setMinutes(0);
+            eightAm.setSeconds(0);
 
-        ogStart = splitStart[1];
-        ogEnd = splitEnd[1];
-        awesomeArray.push([ogStart, ogEnd]);
-      }
+            eightAm = eightAm.getTime();
+            eightAm = new Date(eightAm);
 
-      // timeStartDateFormat = new Date(startTime);
-      // timeEndDateFormat = new Date(endTime);
+            diff = curstart - eightAm;
+
+            if (diff > 0) {
+              beginfreeslot = eightAm;
+              eightAm = eightAm.getTime();
+              endfreeslot = eightAm + diff;
+// console.log("morning begin free slot (should be 8am): " + beginfreeslot);
+// console.log("morning diff should be 30 mins: " + diff);
+//
+// console.log("morning end free slot (should be 830am): " + endfreeslot);
+              prettyStart = new Date(beginfreeslot);
+              prettyEnd = new Date(endfreeslot);
+
+              prettyStartTime = prettyStart.toLocaleString('en-US', { timeZone: 'EST' });
+              prettyEndTime = prettyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+
+              splitStart = prettyStartTime.split(" ");
+              splitEnd = prettyEndTime.split(" ");
+
+              ogStart = splitStart[1];
+              ogEnd = splitEnd[1];
+              awesomeArray.push([prettyStart, prettyEnd]);
+            }
+
+
+
+            // final else statement is skipped on first element due to bad code
+            // copying and pasting the else so it will hit, then it will
+            // add the end time
+            diff = nextstart - curend;
+
+            if (diff > 0) {
+              beginfreeslot = curend;
+              endfreeslot = nextstart + diff;
+              console.log("correct begin free slot: " + beginfreeslot);
+              console.log("correct diff " + diff);
+
+              console.log("correct end slot: " + endfreeslot);
+              prettyStart = new Date(beginfreeslot);
+              prettyEnd = new Date(endfreeslot);
+
+              prettyStartTime = prettyStart.toLocaleString('en-US', { timeZone: 'EST' });
+              prettyEndTime = prettyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+
+              splitStart = prettyStartTime.split(" ");
+              splitEnd = prettyEndTime.split(" ");
+
+              ogStart = splitStart[1];
+              ogEnd = splitEnd[1];
+              awesomeArray.push([prettyStart, prettyEnd]);
+            }
+
+          }
+
+          else if (x == finalmasterArray.length-2){
+            // final else statement is skipped on last element due to bad code
+            // copying and pasting the else so it will hit, then it will
+            // add the end time
+            diff = nextstart - curend;
+
+            if (diff > 0) {
+              beginfreeslot = curend;
+              endfreeslot = nextstart + diff;
+              console.log("correct begin free slot: " + beginfreeslot);
+              console.log("correct diff " + diff);
+
+              console.log("correct end slot: " + endfreeslot);
+              prettyStart = new Date(beginfreeslot);
+              prettyEnd = new Date(endfreeslot);
+
+              prettyStartTime = prettyStart.toLocaleString('en-US', { timeZone: 'EST' });
+              prettyEndTime = prettyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+
+              splitStart = prettyStartTime.split(" ");
+              splitEnd = prettyEndTime.split(" ");
+
+              ogStart = splitStart[1];
+              ogEnd = splitEnd[1];
+              awesomeArray.push([prettyStart, prettyEnd]);
+            }
+
+            // Proceed to add final end of day -> 8 pm time slot
+            sevenPm = new Date(curend);
+
+            sevenPm.setHours(8+12);
+            sevenPm.setMinutes(0);
+            sevenPm.setSeconds(0);
+
+            nextend = nextend.getTime()
+
+            diff = sevenPm - nextend;
+
+            if (diff > 0) {
+              // nextend = nextend.getTime()
+              beginfreeslot = nextend;
+              endfreeslot = nextend + diff;
+
+              prettyStart = new Date(beginfreeslot);
+              prettyEnd = new Date(endfreeslot);
+
+              prettyStartTime = prettyStart.toLocaleString('en-US', { timeZone: 'EST' });
+              prettyEndTime = prettyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+
+              splitStart = prettyStartTime.split(" ");
+              splitEnd = prettyEndTime.split(" ");
+
+              ogStart = splitStart[1];
+              ogEnd = splitEnd[1];
+              awesomeArray.push([prettyStart, prettyEnd]);
+            }
+
+
+          }
+          else {
+              diff = nextstart - curend;
+
+              if (diff > 0) {
+                beginfreeslot = curend;
+                endfreeslot = nextstart + diff;
+                console.log("correct begin free slot: " + beginfreeslot);
+                console.log("correct diff " + diff);
+
+                console.log("correct end slot: " + endfreeslot);
+                prettyStart = new Date(beginfreeslot);
+                prettyEnd = new Date(endfreeslot);
+
+                prettyStartTime = prettyStart.toLocaleString('en-US', { timeZone: 'EST' });
+                prettyEndTime = prettyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+
+                splitStart = prettyStartTime.split(" ");
+                splitEnd = prettyEndTime.split(" ");
+
+                ogStart = splitStart[1];
+                ogEnd = splitEnd[1];
+                awesomeArray.push([prettyStart, prettyEnd]);
+              }
+            }
     }
 
-    // appendPre("AWESOME ARRAY you can paste into email");
-    // appendPre("      ");
-  //  appendPre("[userIDs] are available at the following time(s) on [inputDate]: ");
-
-  //  appendPre("removing old data in my list");
+    // Remove old elements in list
     thelist = document.getElementById("myList");
     while( thelist.firstChild ){
       thelist.removeChild( thelist.firstChild );
@@ -456,11 +624,32 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
       var curstart = times[0];
       var curend = times[1];
 
+      curstartString = String(curstart);
+      curendString = String(curend);
       // createPrettyList(curstart, curend);
       // appendPre("[inputDate]: " + curstart + " to " + curend);
+//
+
+      startstring = curstart.toLocaleString('en-US', { timeZone: 'EST',  timeStyle: "short", dateStyle: "short" });
+      endstring = curend.toLocaleString('en-US', { timeZone: 'EST',  timeStyle: "short", dateStyle: "short" });
+
+      startstringsplit = curstartString.split(" ");
+      pretty_dayofweek = startstringsplit[0]
+      month = curstart.getMonth() + 1;
+      day = curstart.getDate();
+
+      startstringsplit2 = startstring.split(" ");
+      pretty_starttime = startstringsplit2[1] + " " + startstringsplit2[2];
+      endstringsplit2 = endstring.split(" ");
+      pretty_endtime = endstringsplit2[1] + " " + endstringsplit2[2];
+
+      prettystring = (pretty_dayofweek + " " + month + "/" + day + ": " + pretty_starttime + " to " + pretty_endtime);
+      console.log(prettystring);
+
 
       var node = document.createElement("LI");
-      var textnode = document.createTextNode("[inputDate]: " + curstart +  " to " + curend);
+      //var textnode = document.createTextNode("[inputDate]: " + curstart +  " to " + curend);
+      var textnode = document.createTextNode(prettystring)
       node.appendChild(textnode);
       document.getElementById("myList").appendChild(node);
 
@@ -475,3 +664,8 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
 //   node.appendChild(textnode);
 //   document.getElementById("myList").appendChild(node);
 // }
+
+Date.prototype.addHours = function(h) {
+  this.setTime(this.getTime() + (h*60*60*1000));
+  return this;
+}

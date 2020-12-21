@@ -19,11 +19,20 @@ limitations under the License.
   </head>
   <body>
     <p>make it fetch all the calendar data for a couple weeks and then talk to that data so i'm not calling api too much!</p>
+    <p>datepicker, choose multiple dates and print day of week and date etc</p>
+    <p>display email names</p>
+    <p>make start time of 7am, end time of 8 pm. possibly make these parameters</p>
+    <p> put sign out button somewhere else </p>
+    <p> add 'windows' filter, so if i want 1 hour windows across 12/13 to 12/16</p>
 
     <!-- Include functions in our helper file -->
     <script type="text/javascript" src="1.js"></script>
-    <script src="js/jquery-1.6.2.min.js" type="text/javascript"></script>
-    <script src="js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- <script src="js/jquery-1.6.2.min.js" type="text/javascript"></script>
+    <script src="js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script> -->
 
 
     <!--Add buttons to initiate auth sequence and sign out-->
@@ -34,10 +43,18 @@ limitations under the License.
     <button onclick="consolidateAllBusyTimes()">3 sort cal data and send to Consolidation function</button> -->
     <!-- <button onclick="fn2()">4 compare dates and return times</button> -->
 
+    <p>Start Date: <input type="text" id="startDateinput"></p>
+    <p>End Date (leave blank if just want one day, auto assign start date to this): <input type="text" id="endDateinput"></p>
+
     <div id="checkboxes"> Your calendars: </div>
 
     <br></<br>
-    <div id="freetimesTitle"> title here call element and assign emails </div>
+    <p> start date: </p>
+    <div id="freetimesTitle"> start date inputted</div>
+    <p> end date: </p>
+    <div id="freetimesTitle2"> end date inputted </div>
+    <!-- <div id="enddatediv"> end date input </div> -->
+
     <div id="freetimes"> Calendar free times: </div>
     <pre id="content" style="white-space: pre-wrap;"></pre>
 
@@ -45,6 +62,14 @@ limitations under the License.
       <li>Coffee</li>
       <li>Tea</li>
     </ul>
+
+    <script>
+          $( function() {
+            $( "#startDateinput" ).datepicker();
+            $( "#endDateinput" ).datepicker();
+          } );
+    </script>
+
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console

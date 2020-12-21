@@ -2,11 +2,340 @@ var allBusyTimes = [];
 var inputEmails;
 var inputCals = [];
 
+var allStartTimes = [];
+var allEndTimes = [];
 
 var unitmapping = {"days":24*60*60*1000,
                    "hours":60*60*1000,
                    "minutes":60*1000,
                    "seconds":1000};
+
+function isInArray(array, value) {
+  return !!array.find(item => {return item.getTime() == value.getTime()});
+}
+
+
+function consolidateAllBusyTimes(startTimes, endTimes) {
+// Assume input list is sorted by start time
+// startTimessorted
+// endTimes
+
+// combine  the list:
+
+appendPre("running this new method");
+var masterArray = [];
+
+  for (x = 0; x < startTimes.length; x++){
+    startTime = startTimes[x].date;
+    endTime = endTimes[x].date;
+
+    timeStartDateFormat = new Date(startTime);
+    timeEndDateFormat = new Date(endTime);
+
+    prettyStartTime = timeStartDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
+    prettyEndTime = timeEndDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
+
+    timecombo = [timeStartDateFormat, timeEndDateFormat];
+    masterArray.push(timecombo);
+  }
+
+  // STEP 1 merge all same start times
+  var newtimes = [];
+  for (x = 0; x < masterArray.length; x++){
+        var data = masterArray[x];
+
+        var curstart = data[0].getTime();
+        var curend = data[1].getTime();
+
+        var latestend = curend;
+
+        for (i = 0; i < masterArray.length; i++){
+          var data2 = masterArray[i];
+
+          var start2 = data2[0].getTime();
+          var end2 = data2[1].getTime();
+          if (curstart == start2) {
+                if (latestend < end2) {
+                  latestend = end2;
+                }
+          }
+        }
+
+        newtime = [curstart, latestend];
+
+        var shouldWeAddIt = true;
+        for (k=0; k<newtimes.length;k++){
+          data = newtimes[k];
+          start = data[0];
+          end = data[1];
+
+          if (start == curstart){
+            if (end == latestend) {
+              shouldWeAddIt = false;
+            }
+          } else {
+          }
+        }
+
+        if (shouldWeAddIt){
+          newtimes.push(newtime);
+        }
+    }
+
+
+  // STEP 2  Remove times within larger time blocks
+  var newertimes = [];
+  for (x = 0; x < newtimes.length; x++){
+        var data = newtimes[x];
+
+        var curstart = data[0]
+        var curend = data[1]
+        var latestend = curend;
+
+        var shouldAdd = true;
+        for (i = 0; i < newtimes.length; i++){
+          var data2 = newtimes[i];
+          var start2 = data2[0]
+          var end2 = data2[1]
+
+          if (start2 < curstart) {
+            if (end2 > curend){
+              shouldAdd = false;
+            }
+          }
+
+        }
+
+        newtime = [curstart, curend];
+
+        if (shouldAdd) {
+          newertimes.push(newtime);
+        }
+    }
+
+
+    // STEP 2
+    //appendPre("TIMES WITH OVERLAPPING BLOCKS REMOVED: " + newertimes);
+    for (k=0; k<newertimes.length;k++){
+      data = newertimes[k];
+      start = data[0];
+      end = data[1];
+
+      start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+      end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+
+    }
+
+    // STEP  3 FINAL STEP
+    var newesttimes = [];
+    var removedtimes = [];
+    for (x = 0; x < newertimes.length; x++){
+          var data = newertimes[x];
+
+          var curstart = data[0];
+          var curend = data[1];
+
+          for (i = 0; i < newertimes.length; i++){
+            var data2 = newertimes[i];
+
+            var start2 = data2[0];
+            var end2 = data2[1];
+
+            if (curend > start2){
+              if (curend < end2) {
+                newtime = [curstart, end2];
+                newesttimes.push(newtime);
+                removedtimes.push([curstart,curend]);
+                removedtimes.push([start2, end2]);
+              }
+            }
+      }
+    }
+
+    for (k=0; k<newesttimes.length; k++){
+      data = newesttimes[k];
+      start = data[0];
+      end = data[1];
+
+      start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+      end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+
+    }
+
+    for (k=0; k<removedtimes.length; k++){
+      data = removedtimes[k];
+      start = data[0];
+      end = data[1];
+
+      start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+      end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+
+  //    appendPre("Start: " + start2);
+  //    appendPre("End: " + end2);
+    }
+
+
+  //  appendPre("Will now go into newertimes and remove the above times");
+
+    var finaltimes = [];
+    for (k=0; k < newertimes.length; k++){
+      data = newertimes[k];
+      start = data[0];
+      end = data[1];
+
+      var shouldWeAddIt = true;
+
+      for (x=0; x < removedtimes.length; x++){
+      //  appendPre("yoyo")
+            data2 = removedtimes[x];
+            start2 = data2[0];
+            end2 = data2[1];
+
+            if (start2 == start) {
+              if (end2 == end) {
+                shouldWeAddIt = false;
+        //        appendPre("found a match hehe");
+              }
+            }
+      }
+
+      if (shouldWeAddIt == true) {
+        finaltimes.push(data);
+      }
+   }
+
+  // appendPre("Finaltimes list, just need to add what ever is in newesttimes: ");
+   for (k=0; k<finaltimes.length; k++){
+     data = finaltimes[k];
+     start = data[0];
+     end = data[1];
+
+     start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+     end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+
+  //   appendPre("Start: " + start2);
+    // appendPre("End: " + end2);
+   }
+
+//   appendPre("Adding element to final times");
+   for (k=0; k<newesttimes.length; k++){
+     data = newesttimes[k];
+     finaltimes.push(data);
+   }
+
+  // appendPre("Added it, now printing with new addition");
+   for (k=0; k<finaltimes.length; k++){
+     data = finaltimes[k];
+     start = data[0];
+     end = data[1];
+
+     start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+     end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+
+//     appendPre("Start: " + start2);
+//     appendPre("End: " + end2);
+   }
+
+//   appendPre("Just need to sort it now, since the new consolidated time is probably out of order");
+
+   var allstarttimes3 = [];
+   var allendtimes3 = [];
+   for (k=0; k<finaltimes.length; k++){
+     data = finaltimes[k];
+     start = data[0];
+     end = data[1];
+
+     allstarttimes3.push(start);
+     allendtimes3.push(end);
+
+     // start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+     // end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+     //
+     // appendPre("Start: " + start2);
+     // appendPre("End: " + end2);
+   }
+
+//   appendPre("sorting each individual list now");
+  //  allstarttimes3.sort(function(a, b) {
+  //    var c = new Date(a);
+  //    var d = new Date(b);
+  //    return c-d;
+  //  });
+  //
+  //  allendtimes3.sort(function(a, b) {
+  //    var c = new Date(a);
+  //    var d = new Date(b);
+  //    return c-d;
+  // });
+
+  allstarttimes3.sort(function(a, b){return a-b});
+  allendtimes3.sort(function(a, b){return a-b});
+
+
+//  appendPre("adding them back together");
+  var finalmasterArray = [];
+
+    for (x = 0; x < allstarttimes3.length; x++){
+      startTime = allstarttimes3[x];
+      endTime = allendtimes3[x];
+
+      timeStartDateFormat = new Date(startTime);
+      timeEndDateFormat = new Date(endTime);
+
+      prettyStartTime = timeStartDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
+      prettyEndTime = timeEndDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
+  //    appendPre("START TIME " + x + ": " + prettyStartTime);
+//      appendPre("END TIME   " + x + ": " + prettyEndTime);
+
+      // if (timeStartDateFormat > timeEndDateFormat) {
+      //   appendPre("the end time is greater than the start");
+      // }
+
+      timecombo = [timeStartDateFormat, timeEndDateFormat];
+      finalmasterArray.push(timecombo);
+    }
+
+
+//    appendPre("FINISHED!!! allstarttimes3 and allendtimes3, also access altogether with finalmasterArray");
+
+    for (x = 0; x < finalmasterArray.length-1; x++){
+      var times = finalmasterArray[x];
+      var curstart = times[0];
+      var curend = times[1];
+
+      var times = finalmasterArray[x+1];
+
+      var nextstart = times[0];
+      var nextend = times[1];
+
+      diff = nextstart - curend;
+
+      if (diff > 0) {
+        appendPre("looks like theres a free slot here");
+
+        beginfreeslot = curend;
+        endfreeslot = nextstart + diff;
+
+        prettyStart = new Date(beginfreeslot);
+        prettyEnd = new Date(endfreeslot);
+
+        prettyStartTime = prettyStart.toLocaleString('en-US', { timeZone: 'EST' });
+        prettyEndTime = prettyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+
+
+        appendPre("FREE START: " + prettyStartTime);
+        appendPre("FREE END: " + prettyEndTime);
+      }
+
+      // timeStartDateFormat = new Date(startTime);
+      // timeEndDateFormat = new Date(endTime);
+    }
+
+
+
+}
+
+
 
 function floor(value)
 {
@@ -48,12 +377,20 @@ function diff_minutes(dt2, dt1)
 function fn2 () {
   //console.log(getHumanizedDiff(new Date(start2) - new Date(end)));
 
-          // print it
-            for (q = 0; q < allBusyTimes.length; q++){
-              time = allBusyTimes[q].date;
-              appendPre(time);
-            }
-            appendPre("- - - - - - - Attempted sort:")
+          // // print it
+          //   for (q = 0; q < allBusyTimes.length; q++){
+          //     time = allBusyTimes[q].date;
+          //     appendPre(time);
+          //   }
+          //
+          //   // print it
+          //   appendPre("printing start times list");
+          //     for (q = 0; q < allStartTimes.length; q++){
+          //       time = allStartTimes[q].date;
+          //       appendPre(time);
+          //     }
+
+            appendPre("- - - - - - - Sort all times:")
 
             allBusyTimes.sort(function(a, b) {
               var c = new Date(a.date);
@@ -61,101 +398,65 @@ function fn2 () {
               return c-d;
           });
 
-          appendPre("- - - - - - - sort finished, now removing dupes:")
+          appendPre("- - - - - - - Sorting start times")
 
-          uniqueArray = allBusyTimes.filter(function(item, pos) {
-              return allBusyTimes.indexOf(item) == pos;
-          })
+          allStartTimes.sort(function(a, b) {
+            var c = new Date(a.date);
+            var d = new Date(b.date);
+            return c-d;
+        });
 
-          uniqueArray = allBusyTimes.filter(function(item, pos, self) {
-              return self.indexOf(item) == pos;
-          })
-          console.log("are you confused?");
+        appendPre("- - - - - - - Sorting end times")
 
-          console.log("haa", uniqueArray);
-          appendPre("Pizzaaaaaaaaaaaaaaaa! " + uniqueArray);
-          for (qas = 0; qas < uniqueArray.length-1; qas++){
-              slot1 = uniqueArray[qas].date;
-              slot2 = uniqueArray[qas+1].date;
+        allEndTimes.sort(function(a, b) {
+          var c = new Date(a.date);
+          var d = new Date(b.date);
+          return c-d;
+      });
 
-                var f1 = new Date(slot1);
-                var g1 = new Date(slot2);
-                //var diff = f1-g1;
+            appendPre("- - - - - - - sort finished, now removing dupes ALL TIMES:")
 
-              var difference = diff_minutes(f1, g1);
+            allBusyTimes2 = allBusyTimes.filter(function(item, pos) {
+                return allBusyTimes.indexOf(item) == pos;
+            })
 
-                    if (difference > 60) {
-                        appendPre("og date 1: " + f1);//.toLocaleString('en-US', { timeZone: 'EST' }));
-                        appendPre("og date 2: " + g1);// .toLocaleString('en-US', { timeZone: 'EST' }));
-                        appendPre("Difference: " + difference);
-                    }
+            allBusyTimes2 = allBusyTimes2.filter(function(item, pos, self) {
+                return self.indexOf(item) == pos;
+            })
 
-            }
+            appendPre("- - - - - - - sort finished, now removing dupes Start Times:")
+
+            allStartTimes2 = allStartTimes.filter(function(item, pos) {
+                return allStartTimes.indexOf(item) == pos;
+            })
+
+            allStartTimes2 = allStartTimes2.filter(function(item, pos, self) {
+                return self.indexOf(item) == pos;
+            })
+
+              appendPre("- - - - - - - sort finished, now removing dupes End Times:")
+
+              allEndTimes2 = allEndTimes.filter(function(item, pos) {
+                  return allEndTimes.indexOf(item) == pos;
+              })
+
+              allEndTimes2 = allEndTimes2.filter(function(item, pos, self) {
+                  return self.indexOf(item) == pos;
+              })
+
+          //
+          //
+          appendPre("- - - - - - - - Printing ALL times sorted array!! !!! ");
+          for (yolo = 0; yolo < allBusyTimes2.length; yolo++){
+            time = allBusyTimes2[yolo].date;
+            timeDateFormat = new Date(time);
+            prettyTime = timeDateFormat.toLocaleString('en-US', { timeZone: 'EST' });
+            appendPre("SORTED All Times " + yolo + ": " + prettyTime);
           }
 
-
-
-
-  //
-  // time2 = uniqueArray[qas].date;
-  // var difference = diff_minutes(g1, f1);
-  //
-  //       if (difference > 60) {
-  //           appendPre("Pretty date 1:" + f1);//.toLocaleString('en-US', { timeZone: 'EST' }));
-  //           appendPre("Pretty date 2: " + g1);// .toLocaleString('en-US', { timeZone: 'EST' }));
-  //           appendPre("Difference: " + difference);
-  //       }
-
-
-
-// for (qasa = 0; qasa < allBusyTimes.length-1; qasa++){
-//   slot1 = allBusyTimes[qasa].date;
-//   slot2 = allBusyTimes[qasa+1].date;
-//
-//   casayouth = qasa+1;
-//   appendPre("Slot " + qasa + "    " + slot1);
-//   appendPre("Slot " + casayouth + "    " + slot2);
-//
-//   var f1 = new Date(slot1);
-//   var g1 = new Date(slot2);
-//   var diff = f1-g1;
-//
-//   var qasa2 = qasa+1;
-//   // appendPre("Time " + qasa + ":   " +slot1);
-//   // appendPre("Time " + qasa2 + ":   " +slot2);
-
-// //  var difference = dateDiffInDays(g1, f1);
-// var difference = diff_minutes(g1, f1);
-//
-//       if (difference > 60) {
-//           appendPre("Pretty date 1:" + f1);//.toLocaleString('en-US', { timeZone: 'EST' }));
-//           appendPre("Pretty date 2: " + g1);// .toLocaleString('en-US', { timeZone: 'EST' }));
-//           appendPre("Difference: " + difference);
-//       }
-//
-//   //appendPre("Difference: " + getHumanizedDiff(diff));
-
-
-  // for (aa = 0; aa < allBusyTimes.length-1; aa++){
-  //   timeOne = allBusyTimes[aa];
-  //   timeTwo = allBusyTimes[aa+1]
-  //
-  //   allBusyTimes.sort((a,b)=>a.getTime()-b.getTime());
-  //
-  //
-  // }
-  // allBusyTimes.sort((a,b)=>a.getTime()-b.getTime());
-  //
-  // appendPre("- - - - - - - Attempted sort final:")
-  // for (aa1 = 0; aa1 < allBusyTimes.length; aa1++){
-  //   timeOne = allBusyTimes[aa1];
-  //
-  //   appendPre(timeOne);
-  // }
-  // // attempt to sort
-//  allBusyTimes.sort(function(a,b){return a.getTime() - b.getTime()});
-  //allBusyTimes.sort((a,b)=>a.getTime()-b.getTime());
-
+          appendPre("- - - - - - - - Passing sorted starttimes and endttimes to new function");
+          consolidateAllBusyTimes(allStartTimes2, allEndTimes2);
+}
 
 function fn1 () {
 
@@ -179,8 +480,8 @@ function myFunction() {
 
         items: inputCals,
         // 8 am EST to 6 pm EST
-        timeMin: "2020-12-17T00:00:00-00:00",
-        timeMax: "2020-12-18T23:00:00-00:00",
+        timeMin: "2020-12-07T05:00:00-00:00",
+        timeMax: "2020-12-07T23:00:00-00:00",
         timeZone: "-0500",
     })
 
@@ -210,8 +511,18 @@ function myFunction() {
               var data2 = {date: endTime};
               allBusyTimes.push(data);
               allBusyTimes.push(data2);
-              // appendPre(startTime);
-              // appendPre(endTime);
+
+              allStartTimes.push(data);
+              allEndTimes.push(data2);
+
+              // var starttime2 = new Date(data.date);
+              // var endtime2 = new Date(data2.date);
+              //
+              // appendPre("Start time: " + starttime2.toLocaleString('en-US', { timeZone: 'EST' }));
+              // appendPre("End time:   " + endtime2.toLocaleString('en-US', { timeZone: 'EST' }));
+              //
+              // allStartTimes.push(data);
+              // allEndtimes.push(data2);
               // if startime - endtime greater than 6 hours ignore it (i.e. OOO)
             }
           }

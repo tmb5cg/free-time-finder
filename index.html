@@ -18,9 +18,7 @@ limitations under the License.
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>When are the following calendars free on December 7th?</p>
-    <p>checkbox the ones you want. if any calendar has an all day event, it won't work, go home</p>
-    <p>checkbox the ones you want and click the button, in that order, otherwise leave</p>
+    <p>make it fetch all the calendar data for a couple weeks and then talk to that data so i'm not calling api too much!</p>
 
     <!-- Include functions in our helper file -->
     <script type="text/javascript" src="1.js"></script>
@@ -31,41 +29,22 @@ limitations under the License.
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" style="display: none;">Authorize</button>
     <button id="signout_button" style="display: none;">Sign Out</button>
-    <button onclick="loadTimes()">GET FREE TIMES</button>
-    <!-- <button onclick="fn1()">2 Load Array with Checkboxes</button>
+    <!-- <button onclick="fetchFreeBusy()">2 Fetch cal data</button>
 
-    <button onclick="myFunction()">3 runfunction</button>
-    <button onclick="fn2()">4 compare dates and return times</button> -->
+    <button onclick="consolidateAllBusyTimes()">3 sort cal data and send to Consolidation function</button> -->
+    <!-- <button onclick="fn2()">4 compare dates and return times</button> -->
 
-    <div id="checkboxes"> Stuff here </div>
+    <div id="checkboxes"> Your calendars: </div>
 
-    <div id="freetimes"> Calendar free times here </div>
+    <br></<br>
+    <div id="freetimesTitle"> title here call element and assign emails </div>
+    <div id="freetimes"> Calendar free times: </div>
     <pre id="content" style="white-space: pre-wrap;"></pre>
 
-    <!-- <script>
-  	$(document).ready(function() {
-          // Set initial state to 'checked'
-          $( "#checkBox1" ).change(function() {
-
-              $.ajax({
-                  url: 'searchIP.php',
-                  data: {searchIP: $( "#searchIPinput" ).val(),
-                     pizza: $( "#checkBox1" ).prop('checked'),
-                     pizza2: $( "#checkBox2" ).prop('checked'),
-                     pizza3: $( "#checkBox3" ).prop('checked'),
-                     pizza4: $( "#checkBox4" ).prop('checked'),
-                     pizza5: $( "#checkBox5" ).prop('checked'),
-                     pizza6: $( "#checkBox6" ).prop('checked'),
-                     pizza7: $( "#checkBox7" ).prop('checked'),
-                     },
-                  success: function(data){
-                      $('#searchIPresult').html(data);
-                  }
-              });
-          });
-
-  	});
-  	</script> -->
+    <ul id="myList">
+      <li>Coffee</li>
+      <li>Tea</li>
+    </ul>
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console
@@ -121,7 +100,7 @@ limitations under the License.
           authorizeButton.style.display = 'none';
           signoutButton.style.display = 'block';
           //listUpcomingEvents();
-          runIT();
+           getCalendarIDs();
         } else {
           authorizeButton.style.display = 'block';
           signoutButton.style.display = 'none';
@@ -155,22 +134,44 @@ limitations under the License.
       }
 
       /**
+       * Append a pre element to the body containing the given message
+       * as its text node with a bullet point.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendToList(message) {
+        var pre = document.getElementById('content');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+      /**
+       * Append a pre element to the body containing the given message
+       * as its text node with a bullet point.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendPre(message) {
+        var pre = document.getElementById('content');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+      /**
        * Print the summary and start datetime/date of the next ten events in
        * the authorized user's calendar. If no events are found an
        * appropriate message is printed.
        */
 
-       function runIT() {
-         getCalendarIDs();
-          // fn1();
-          // myFunction();
-          // fn2();
-       }
-
+       // this function is not called !!!
        function loadTimes() {
-         fn1();
-         myFunction();
-         fn2();
+         pushCheckboxStatesToLocalStorage();
+
+         // makes request to Google Calendar API, populates free busy global arrays
+         fetchFreeBusy();
+
+        // sorts global arrays, runs consolidation func
+         sortGlobalArrays();
        }
 
       function listUpcomingEvents() {

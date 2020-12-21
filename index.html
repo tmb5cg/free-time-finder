@@ -18,11 +18,11 @@ limitations under the License.
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>make it fetch all the calendar data for a couple weeks and then talk to that data so i'm not calling api too much!</p>
+    <!-- <p>make it fetch all the calendar data for a couple weeks and then talk to that data so i'm not calling api too much!</p>
     <p>datepicker, choose multiple dates and print day of week and date etc</p>
     <p>display email names</p>
     <p>make start time of 7am, end time of 8 pm. possibly make these parameters</p>
-    <p> put sign out button somewhere else </p>
+    <p> put sign out button somewhere else </p> -->
     <p> add 'windows' filter, so if i want 1 hour windows across 12/13 to 12/16</p>
 
     <!-- Include functions in our helper file -->
@@ -44,23 +44,22 @@ limitations under the License.
     <!-- <button onclick="fn2()">4 compare dates and return times</button> -->
 
     <p>Start Date: <input type="text" id="startDateinput"></p>
-    <p>End Date (leave blank if just want one day, auto assign start date to this): <input type="text" id="endDateinput"></p>
+    <p>End   Date: <input type="text" id="endDateinput" placeholder="If none, uses start date"></p>
 
     <div id="checkboxes"> Your calendars: </div>
 
     <br></<br>
-    <p> start date: </p>
+    <!-- <p> start date: </p>
     <div id="freetimesTitle"> start date inputted</div>
     <p> end date: </p>
-    <div id="freetimesTitle2"> end date inputted </div>
+    <div id="freetimesTitle2"> end date inputted </div> -->
     <!-- <div id="enddatediv"> end date input </div> -->
 
     <div id="freetimes"> Calendar free times: </div>
     <pre id="content" style="white-space: pre-wrap;"></pre>
 
     <ul id="myList">
-      <li>Coffee</li>
-      <li>Tea</li>
+      <li>Select date(s) and person</li>
     </ul>
 
     <script>

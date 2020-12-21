@@ -91,8 +91,8 @@ function fetchFreeBusy() {
 
   }
 
-  document.getElementById('freetimesTitle').innerHTML = inputDate.toISOString();
-  document.getElementById('freetimesTitle2').innerHTML = inputDate2.toISOString();
+  // document.getElementById('freetimesTitle').innerHTML = inputDate.toISOString();
+  // document.getElementById('freetimesTitle2').innerHTML = inputDate2.toISOString();
 
   // Format in ISO
   inputDate = inputDate.toISOString();
@@ -477,7 +477,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
 
             diff = curstart - eightAm;
 
-            if (diff > 0) {
+            if ((diff > 0) && (diff < 25200000)) {
               beginfreeslot = eightAm;
               eightAm = eightAm.getTime();
               endfreeslot = eightAm + diff;
@@ -506,7 +506,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
             // add the end time
             diff = nextstart - curend;
 
-            if (diff > 0) {
+            if ((diff > 0) && (diff < 25200000)) {
               beginfreeslot = curend;
               endfreeslot = nextstart + diff;
               console.log("correct begin free slot: " + beginfreeslot);
@@ -535,7 +535,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
             // add the end time
             diff = nextstart - curend;
 
-            if (diff > 0) {
+              if ((diff > 0) && (diff < 25200000)) {
               beginfreeslot = curend;
               endfreeslot = nextstart + diff;
               console.log("correct begin free slot: " + beginfreeslot);
@@ -567,7 +567,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
 
             diff = sevenPm - nextend;
 
-            if (diff > 0) {
+            if ((diff > 0) && (diff < 25200000)) {
               // nextend = nextend.getTime()
               beginfreeslot = nextend;
               endfreeslot = nextend + diff;
@@ -591,7 +591,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
           else {
               diff = nextstart - curend;
 
-              if (diff > 0) {
+              if ((diff > 0) && (diff < 25200000)) {
                 beginfreeslot = curend;
                 endfreeslot = nextstart + diff;
                 console.log("correct begin free slot: " + beginfreeslot);

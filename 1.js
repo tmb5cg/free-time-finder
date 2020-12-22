@@ -76,6 +76,7 @@ function fetchFreeBusy() {
   inputDate = document.getElementById('startDateinput').value;
 
   if (inputDate.length < 2) {
+    console.log("input is less than 2");
     inputDate = new Date();
 
     inputDate.setHours(8);

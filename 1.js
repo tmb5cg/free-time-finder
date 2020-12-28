@@ -215,17 +215,17 @@ function consolidateAllBusyTimes() {
       }
       // print OG array
     // //
-    // appendPre("Original array");
-    //   for (k=0; k<masterArray.length;k++){
-    //     data = masterArray[k];
-    //     start = data[0];
-    //     end = data[1];
-    //
-    //     start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
-    //     end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
-    //
-    //     appendPre(k + " Start: " + start2 + " || End: " + end2);
-    //   }
+    appendPre("Original array");
+      for (k=0; k<masterArray.length;k++){
+        data = masterArray[k];
+        start = data[0];
+        end = data[1];
+
+        start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+        end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+
+        appendPre(k + " Start: " + start2 + " || End: " + end2);
+      }
       // STEP 1 merge all same start times
       var newtimes = [];
       for (x = 0; x < masterArray.length; x++){

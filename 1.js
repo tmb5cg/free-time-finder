@@ -3,6 +3,7 @@ var inputCals = [];
 var allStartTimes = [];
 var allEndTimes = [];
 
+var busyBlocksToAdd = [];
 
 // Fetches calendar IDs, creates checkboxes and adds event listener
 // called on site load
@@ -76,7 +77,7 @@ function fetchFreeBusy() {
   inputDate = document.getElementById('startDateinput').value;
 
   if (inputDate.length < 2) {
-    console.log("input is less than 2");
+    console.log("input is less than 2, default to Today as input date");
     inputDate = new Date();
 
     inputDate.setHours(8);
@@ -102,10 +103,79 @@ function fetchFreeBusy() {
 
   // document.getElementById('freetimesTitle').innerHTML = inputDate.toISOString();
   // document.getElementById('freetimesTitle2').innerHTML = inputDate2.toISOString();
+  inputDate5 = inputDate.toISOString();
+  inputDate6 = inputDate2.toISOString();
 
+  start = inputDate.getDate()
+  end = inputDate2.getDate()
+  appendPre("start " + start + " end " + end)
+  diff = end - start;
+  appendPre("diff: " + diff)
+  //
+  // appendPre("Add these to list of all time blocks")
+
+  // for each day in between input dates, add event
+  // day1 8am 830am, 8pm to day2 8am
+  for (x=0; x < diff; x++){
+    startdate = inputDate
+
+    day = startdate.getDate()
+
+    curDateDay = day + x
+
+    //appendPre(curDateDay)
+    morningBusyStart = new Date()
+    morningBusyStart.setDate(curDateDay)
+    morningBusyStart.setHours(8)
+    morningBusyStart.setMinutes(0)
+    morningBusyStart.setSeconds(0)
+    morningBusyStart.setFullYear(inputDate.getFullYear())
+
+    morningBusyEnd = new Date()
+    morningBusyEnd.setDate(curDateDay)
+    morningBusyEnd.setHours(8)
+    morningBusyEnd.setMinutes(30)
+    morningBusyEnd.setSeconds(0)
+    morningBusyEnd.setFullYear(inputDate.getFullYear())
+
+
+    nightBusyStart = new Date()
+    nightBusyStart.setDate(curDateDay)
+    nightBusyStart.setHours(20)
+    nightBusyStart.setMinutes(0)
+    nightBusyStart.setSeconds(0)
+    nightBusyStart.setFullYear(inputDate.getFullYear())
+
+    nightBusyEnd = new Date()
+    nightBusyEnd.setDate(curDateDay)
+    nightBusyEnd.setHours(20)
+    nightBusyEnd.setMinutes(30)
+    nightBusyEnd.setSeconds(0)
+    nightBusyEnd.setFullYear(inputDate.getFullYear())
+
+    // prettyStartTime = morningBusyStart.toLocaleString('en-US', { timeZone: 'EST' });
+    // prettyEndTime = morningBusyEnd.toLocaleString('en-US', { timeZone: 'EST' });
+    var morningBusyStart_formatted = {date: morningBusyStart};
+    var morningBusyEnd_formatted = {date: morningBusyEnd};
+
+    var nightBusyStart_formatted = {date: nightBusyStart};
+    var nightBusyEnd_formatted = {date: nightBusyEnd};
+
+    allStartTimes.push(morningBusyStart_formatted);
+    allEndTimes.push(morningBusyEnd_formatted);
+
+    allStartTimes.push(nightBusyStart_formatted);
+    allEndTimes.push(nightBusyEnd_formatted);
+
+    timecombo = [morningBusyStart, morningBusyEnd];
+    busyBlocksToAdd.push(timecombo);
+
+  }
   // Format in ISO
   inputDate = inputDate.toISOString();
   inputDate2 = inputDate2.toISOString();
+
+  //appendPre("Start date: " + inputDate + " end date: " + inputDate2);
 
   return freeRequest = gapi.client.calendar.freebusy.query({
 
@@ -115,8 +185,8 @@ function fetchFreeBusy() {
         // timeMax: "2020-12-07T23:00:00-00:00",
         // timeMin: "2020-12-21T05:00:00.000Z",
         // timeMax: "2020-12-21T23:00:00.000Z",
-        timeMin: inputDate,
-        timeMax: inputDate2,
+        timeMin: inputDate5,
+        timeMax: inputDate6,
         timeZone: "-0500",
     })
 
@@ -150,6 +220,9 @@ function fetchFreeBusy() {
 
               // if startime - endtime greater than 6 hours ignore it (i.e. OOO)
             }
+
+            // for each day in between input dates, add event
+            // day1 8am 830am, 8pm to day2 8am
           }
 
           // I think .then(function(response)) adds the delay which is why it didn't work before
@@ -214,7 +287,7 @@ function consolidateAllBusyTimes() {
         masterArray.push(timecombo);
       }
       // print OG array
-    // //
+    // // //
     appendPre("Original array");
       for (k=0; k<masterArray.length;k++){
         data = masterArray[k];
@@ -271,17 +344,17 @@ function consolidateAllBusyTimes() {
 
         // print OG array
       //
-      // appendPre("Merging same start times");
-      //   for (k=0; k<newtimes.length;k++){
-      //     data = newtimes[k];
-      //     start = data[0];
-      //     end = data[1];
-      //
-      //     start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
-      //     end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
-      //
-      //     appendPre(k + " Start: " + start2 + " || End: " + end2);
-      //   }
+    //  appendPre("Merging same start times");
+        for (k=0; k<newtimes.length;k++){
+          data = newtimes[k];
+          start = data[0];
+          end = data[1];
+
+          start2 = new Date(start).toLocaleString('en-US', { timeZone: 'EST' });
+          end2 = new Date(end).toLocaleString('en-US', { timeZone: 'EST' });
+
+          //appendPre(k + " Start: " + start2 + " || End: " + end2);
+        }
 
       // STEP 2  Remove times within larger time blocks
       var newertimes = [];
@@ -486,7 +559,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
 
             diff = curstart - eightAm;
 
-            if ((diff > 0) && (diff < 25200000)) {
+            if ((diff > 0) && (diff < 36000000)) {
               beginfreeslot = eightAm;
               eightAm = eightAm.getTime();
               endfreeslot = eightAm + diff;
@@ -515,7 +588,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
             // add the end time
             diff = nextstart - curend;
 
-            if ((diff > 0) && (diff < 25200000)) {
+            if ((diff > 0) && (diff < 36000000)) {
               beginfreeslot = curend;
               endfreeslot = nextstart + diff;
               console.log("correct begin free slot: " + beginfreeslot);
@@ -544,7 +617,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
             // add the end time
             diff = nextstart - curend;
 
-              if ((diff > 0) && (diff < 25200000)) {
+              if ((diff > 0) && (diff < 36000000)) {
               beginfreeslot = curend;
               endfreeslot = nextstart + diff;
               console.log("correct begin free slot: " + beginfreeslot);
@@ -576,7 +649,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
 
             diff = sevenPm - nextend;
 
-            if ((diff > 0) && (diff < 25200000)) {
+            if ((diff > 0) && (diff < 36000000)) {
               // nextend = nextend.getTime()
               beginfreeslot = nextend;
               endfreeslot = nextend + diff;
@@ -600,7 +673,7 @@ function printPrettyTimeslots(allstarttimes3, allendtimes3, finalmasterArray){
           else {
               diff = nextstart - curend;
 
-              if ((diff > 0) && (diff < 25200000)) {
+              if ((diff > 0) && (diff < 36000000)) {
                 beginfreeslot = curend;
                 endfreeslot = nextstart + diff;
                 console.log("correct begin free slot: " + beginfreeslot);
